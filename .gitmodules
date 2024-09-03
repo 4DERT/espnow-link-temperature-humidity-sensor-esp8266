@@ -1,0 +1,3 @@
+[submodule "components/espnow-link-protocol"]
+	path = components/espnow-link-protocol
+	url = https://github.com/4DERT/espnow-link-protocol.git
