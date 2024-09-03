@@ -3,7 +3,7 @@
 # project subdirectory.
 #
 
-PROJECT_NAME := esp8266_fota_https
+PROJECT_NAME := espnow-link-sht30-esp8266
 
 EXTRA_COMPONENT_DIRS := $(CURDIR)/components
 
