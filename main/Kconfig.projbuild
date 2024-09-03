@@ -1,0 +1,83 @@
+menu "GPIO configuration"
+
+    config GPIO_LED
+        int "LED GPIO number"
+        range 0 16
+        default 2
+        help
+            Set the builtin LED GPIO number.
+
+    config GPIO_LED_ACTIVE_STATE
+        int "LED active state (0 for low, 1 for high)"
+        range 0 1
+        default 0
+        help
+            Set the active state for the status LED. Use 0 for active low, 1 for active high.
+
+    config GPIO_BUTTON
+        int "Button GPIO number"
+        range 0 16
+        default 15
+        help
+            Set the pair button GPIO number.
+
+    config GPIO_BUTTON_ACTIVE_STATE
+        int "Button active state (0 for low, 1 for high)"
+        range 0 1
+        default 1
+        help
+            Set the active state for the button. Use 0 for active low, 1 for active high.
+            This setting also enables internal pull-up or pull-down resistors accordingly.
+
+    config GPIO_I2C_SDA
+        int "I2C SDA GPIO number"
+        range 0 16
+        default 4
+        help
+            Set the I2C SDA GPIO number.
+
+    config GPIO_I2C_SCL
+        int "I2C SCL GPIO number"
+        range 0 16
+        default 5
+        help
+            Set the I2C SCL GPIO number.
+
+endmenu
+
+menu "Deep sleep configuration"
+
+    config USE_DEEP_SLEEP
+        bool "Use deep sleep mode"
+        default y
+        help
+            Enable or disable the use of deep sleep mode. 
+            If this option is not selected, delay will be used instead of deep sleep.
+
+    config DEEP_SLEEP_DURATION_DATA_RECEIVED
+        int "Deep sleep duration (seconds) when data is received"
+        range 0 86400
+        default 300
+        help
+            Set the duration of deep sleep (in seconds) when data is successfully received.
+            Ensure that this value is greater than or equal to the random offset time.
+
+    config DEEP_SLEEP_DURATION_NO_DATA_OR_ERROR
+        int "Deep sleep duration (seconds) when no data is received or an error occurs"
+        range 0 86400
+        default 60
+        help
+            Set the duration of deep sleep (in seconds) when no data is received or an error occurs.
+            Ensure that this value is greater than or equal to the random offset time.
+
+    config DEEP_SLEEP_RANDOM_TIME_OFFSET
+        int "Random sleep offset (seconds)"
+        range 0 60
+        default 10
+        help
+            Set the random time offset (in seconds) that will be subtracted from the deep sleep duration.
+            This helps to ensure that devices do not send data at exactly the same time.
+            Make sure that DEEP_SLEEP_DURATION_DATA_RECEIVED and DEEP_SLEEP_DURATION_NO_DATA_OR_ERROR
+            are set to values greater than or equal to this offset.
+
+endmenu
