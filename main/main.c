@@ -41,7 +41,7 @@ void sleep_esp(bool is_error);
 
 link_config_t my_device = {
     .type = 1,
-    .config = "\"data_interval\": 300",
+    .config = "{\"data_interval\": 300}",
     .data_fmt = "{\"T\":%.2f,\"H\":%.2f}",
     .user_data_msg_cb = on_link_data_message,
 };
@@ -83,6 +83,8 @@ void app_main() {
 
   // Send data
   bool is_received = link_send_data_msg();
+  if (!is_received)
+    ESP_LOGE(TAG, "Message not received");
 
   // Turn off led
   gpio_set_level(CONFIG_GPIO_LED, !CONFIG_GPIO_LED_ACTIVE_STATE);
@@ -110,24 +112,32 @@ char *on_link_data_message(void) {
   esp_err_t err = sht3x_read_temperature_humidity(&temperature, &humidity);
 
   if (err != ESP_OK) {
+    ESP_LOGE(TAG, "Error while reading data from sht3x");
     sleep_esp(true);
   }
 
   char *status = link_generate_data_message(NULL, temperature, humidity);
+
+  if (status == NULL) {
+    ESP_LOGE(TAG, "Failed to generate data message");
+    return NULL;
+  }
+
+  ESP_LOGI(TAG, "Status: %s", status);
   return status;
 }
 
 void sleep_esp(bool is_error) {
-  const uint64_t time_s =
+  const uint32_t time_s =
       (is_error ? CONFIG_DEEP_SLEEP_DURATION_NO_DATA_OR_ERROR
                 : CONFIG_DEEP_SLEEP_DURATION_DATA_RECEIVED) -
       (esp_random() % CONFIG_DEEP_SLEEP_RANDOM_TIME_OFFSET);
 
 #if CONFIG_USE_DEEP_SLEEP
-  ESP_LOGI(TAG, "Going into deep sleep for %llu seconds", time_s);
+  ESP_LOGI(TAG, "Going into deep sleep for %u seconds", time_s);
   esp_deep_sleep(time_s * US_TO_S_FACTOR);
 #else
-  ESP_LOGI(TAG, "Waiting for %llu seconds", time_s);
+  ESP_LOGI(TAG, "Waiting for %u seconds", time_s);
   vTaskDelay(pdMS_TO_TICKS(time_s * MS_TO_S_FACTOR));
   esp_restart();
 #endif
